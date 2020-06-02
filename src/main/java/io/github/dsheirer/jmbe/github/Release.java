@@ -19,14 +19,22 @@
 
 package io.github.dsheirer.jmbe.github;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * GitHub release
  */
 public class Release
 {
+    private final static Logger mLog = LoggerFactory.getLogger(Release.class);
+
     private Version mVersion;
     private JsonObject mJsonObject;
 
@@ -73,6 +81,22 @@ public class Release
         return getTag("assets_url");
     }
 
+    public List<Asset> getAssets()
+    {
+        List<Asset> assets = new ArrayList<>();
+        JsonArray array = mJsonObject.getAsJsonArray("assets");
+
+        if(!array.isJsonNull())
+        {
+            for(JsonElement element: array)
+            {
+                assets.add(new Asset(element.getAsJsonObject()));
+            }
+        }
+
+        return assets;
+    }
+
     /**
      * HTML URL
      */
@@ -108,6 +132,7 @@ public class Release
 
         return null;
     }
+
 
     /**
      * Indicates if the release has a download URL

@@ -22,6 +22,7 @@
 
 package io.github.dsheirer.preference.decoder;
 
+import io.github.dsheirer.jmbe.github.Version;
 import io.github.dsheirer.preference.Preference;
 import io.github.dsheirer.preference.PreferenceType;
 import io.github.dsheirer.sample.Listener;
@@ -32,6 +33,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.prefs.Preferences;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Decoder preferences
@@ -42,6 +45,7 @@ public class JmbeLibraryPreference extends Preference
     private Preferences mPreferences = Preferences.userNodeForPackage(JmbeLibraryPreference.class);
 
     private static final String PREFERENCE_KEY_PATH_JMBE_LIBRARY = "path.jmbe.library.1.0.0";
+    private final Pattern VERSION_PATTERN = Pattern.compile(".*jmbe-(\\d{1,5}.\\d{1,5}.\\d{1,5}\\w*)\\.jar");
     private Path mPathJmbeLibrary;
 
     /**
@@ -58,6 +62,23 @@ public class JmbeLibraryPreference extends Preference
     public PreferenceType getPreferenceType()
     {
         return PreferenceType.JMBE_LIBRARY;
+    }
+
+    public Version getCurrentVersion()
+    {
+        Path path = getPathJmbeLibrary();
+
+        if(path != null)
+        {
+            Matcher m = VERSION_PATTERN.matcher(path.toString());
+
+            if(m.matches())
+            {
+                return Version.fromString(m.group(1));
+            }
+        }
+
+        return null;
     }
 
     /*
